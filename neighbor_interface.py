@@ -25,7 +25,8 @@ class FindNeighbor:
 
     def make_model(self):
         points = [(u['x'], u['y']) for id_, u in self.users.items()]
-        self.tree = cKDTree(points)
+        if points:
+            self.tree = cKDTree(points)
 
     def is_exist(self, user_id: int) -> bool:
         return user_id in self.users
