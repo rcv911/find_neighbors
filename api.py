@@ -1,5 +1,6 @@
 """Настройка и запуск приложения."""
 import time
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from aiohttp import web
 from aiohttp.web import Application
@@ -34,11 +35,9 @@ def load_config(config_path: str) -> dict:
 
 def init_app(config: dict) -> Application:
     """Инициализация web приложения."""
-    loop = asyncio.get_event_loop()
     app = web.Application()
-    interface = init_interface_find_neighbor(config)
+    interface = init_interface_find_neighbor(config.get('app'))
     log.debug(f'app_interface {interface}')
-    loop.create_task(generate_users(interface))
 
     app['config'] = config
     app['find_neighbor'] = interface
@@ -56,19 +55,20 @@ def init_app(config: dict) -> Application:
 
 def init_interface_find_neighbor(config: dict):
     """Инициаллизация интерфейса FindNeighbor."""
+    log.debug(f'CONFIG {config}')
     qty_users = config.get('qty_users', 1000)
     const = config.get('const', 100)
     radius = config.get('radius', 50)
-    k = config.get('k', 10)
+    k = config.get('k', 10_000)
+    log.debug(f'QTY USERS {qty_users}')
     return FindNeighbor(qty_users, const, radius, k)
 
 
-async def generate_users(interface: FindNeighbor):
-    """Генерация реестра пользователей."""
+def generate_users(interface: FindNeighbor):
+    """Генерация реестра пользователей.  CPU bound задача."""
     start = time.time()
     interface.gen_users()
     log.debug(f'GEN USERS {time.time() - start} sec')
-    log.debug(f'USER SIZE {interface.get_size()}')
     start = time.time()
     interface.make_model()
     log.debug(f'MAKE MODEL {time.time() - start} sec')
@@ -82,6 +82,10 @@ def main(config_path: str):
     config = load_config(config_path)
     app = init_app(config)
     app_config = config.get('app', {})
+
+    loop = asyncio.get_event_loop()
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as pool:
+        _ = loop.run_in_executor(pool, generate_users(app['find_neighbor']))
 
     web.run_app(app, port=app_config.get('port', 2020))
 

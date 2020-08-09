@@ -1,6 +1,5 @@
-"""Cуть приложения."""
-from pympler import asizeof
-from hurry.filesize import size
+"""Интерейс позволяет запросить K ближайших соседей пользователя N в радиусе
+M километров.Сгенерировать пользователей. CRUD на управление пользователями."""
 from scipy.spatial import cKDTree
 import logging
 import namegenerator
@@ -30,9 +29,6 @@ class FindNeighbor:
 
     def is_exist(self, user_id: int) -> bool:
         return user_id in self.users
-
-    def get_size(self) -> str:
-        return size(asizeof.asizeof(self.users))
 
     def get_len(self) -> int:
         return len(self.users)
@@ -96,6 +92,8 @@ class FindNeighbor:
         k_neighbor = kwargs.get('k', self.k)
         self.check_value(radius)
         self.check_value(k_neighbor)
+        radius = float(radius)
+        k_neighbor = float(k_neighbor)
 
         user = self.get_user(user_id)
         user_coordinates = [user['x'], user['y']]
@@ -116,13 +114,14 @@ class FindNeighbor:
         }
 
     @staticmethod
-    def get_neighbors_in_radius(dist: list, index: list, radius: int) -> list:
+    def get_neighbors_in_radius(dist: list, index: list,
+                                radius: (int, float)) -> list:
         """Получить индексы соседей пользователя в заданном радиусе."""
         index_neighbors = list(zip(dist, index))[1:]
-        return [index for dist, index in index_neighbors if dist < radius]
+        return [index for dist, index in index_neighbors if dist <= radius]
 
     @staticmethod
-    def check_value(value: (str, int)) -> (None, dict):
+    def check_value(value: (str, int, float)) -> (None, dict):
         if isinstance(value, str) and not value.replace('.', '', 1).isdigit():
             return {
                 'data': f'Параметр {value} должен быть числом',

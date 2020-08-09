@@ -34,6 +34,4 @@ class NeighborEndpoint(AioHTTPRestEndpoint):
         радиусе M."""
         interface = self.get_interface(request)
         data = interface.get_neighbors(request.query)
-        # TODO смореть готово ли приложение к работе и сколько по времени
-        #  это заняло
         return respond_with_json(make_response(data, 200))

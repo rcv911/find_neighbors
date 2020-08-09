@@ -18,11 +18,8 @@ class EntryEndpoint(AioHTTPRestEndpoint):
         ]
 
     async def get(self, request: Request) -> Response:
-        """
-        GET метод /v1/"""
+        """GET метод /v1/ Получение количества пользователей."""
         interface = request.app['find_neighbor']
-        # смореть готово ли приложение к работе и сколько по времени это заняло
         return respond_with_json(make_response(
-                f'Количество пользователей: {interface.get_len()}. Занимаемый '
-                f'размер в памяти {interface.get_size()}', 200)
+                f'Количество пользователей: {interface.get_len()}', 200)
             )
