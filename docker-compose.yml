@@ -1,0 +1,13 @@
+version: "3"
+services:
+  find_neighbors:
+    container_name: find_neighbors
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "80:2020"
+    volumes:
+      - ${PWD}/config/config.toml:/config/config.toml
+    logging:
+      driver: syslog
