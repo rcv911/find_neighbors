@@ -1,7 +1,7 @@
 [app]
 port = 2020
 loglevel='INFO'
-qty_users=1_000_000
+qty_users=10_000_000
 const=100
 radius=50
 k=10_000
