@@ -95,14 +95,14 @@ class TestPerformance(FindNeighborTestCase):
             print('Gen users...')
             start = time.time()
             self.interface.gen_users()
-            print(f'Gen users is done for {time.time() - start} sec')
+            print(f'Gen users is done for {round(time.time() - start, 3)} sec')
             print('Make tree...')
             start = time.time()
             self.interface.make_model()
-            print(f'Make tree is done for {time.time() - start} sec')
+            print(f'Make tree is done for {round(time.time() - start, 3)} sec')
             print('Get neighbors...')
             result = timeit(lambda: self.interface.get_neighbors({
                 'user_id': 0, 'radius': 50.0, 'k': 100
             }), number=qty_runs)
-            print(f'{qty_users} items: get_neighbors takes {result} for '
-                  f'{qty_runs} runs\n')
+            print(f'{qty_users} items: get_neighbors takes {round(result, 3)} '
+                  f'for {qty_runs} runs\n')
