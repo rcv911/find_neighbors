@@ -85,3 +85,31 @@ API со следующим набором эндпоинтов:
     Make tree is done for 1.346 sec
     Get neighbors...
     1000000 items: get_neighbors takes 0.123 for 1000 runs
+    
+    Gen users...
+    Gen users is done for 43.755 sec
+    Make tree...
+    Make tree is done for 12.833 sec
+    Get neighbors...
+    10000000 items: get_neighbors takes 0.15 for 1000 runs
+    
+### Мысли и проблемы
+
+    • Пришлось пожертвовать оперативной памятью
+    
+        N = 100        | Size of list: 42K
+        N = 1000       | Size of list: 412K
+        N = 10_000     | Size of list: 3M
+        N = 100_000    | Size of list: 41M
+        N = 1_000_000  | Size of list: 407M
+        N = 10_000_000 | Size of list: 3G
+    
+    • Из-за п.1 есть временный промежуток для запуска REST API
+           
+    • Оказалось, что для большого количества данных N = 10_000_000, лучше 
+    будет использовать метод query, а потом отфильтровать дистанции по радиусу  
+
+       cKDTree.query(xy, k=k) and filter     0.00033 sec
+       cKDTree.query_ball_point(xy, radius)  0.46180 sec
+       
+      
